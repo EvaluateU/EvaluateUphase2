@@ -60,8 +60,8 @@
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1oZXptd3BiYnh1enpjcGNwZWdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU2MTA3NzIsImV4cCI6MjA2MTE4Njc3Mn0.eEgaMdWAfZywvIZgQFIe6-DIxc1__2vaEt3j4Ey0jxw'
     );
 
-    async function loadAthletes() {
-      const { data, error } = await supabase.from('Athletes').select('*');
+    async function loadathletes() {
+      const { data, error } = await supabase.from('athletes').select('*');
       const cardArea = document.getElementById("athleteCards");
       const trendingTable = document.getElementById("trendingTable");
 
@@ -93,7 +93,7 @@
       });
     }
 
-    loadAthletes();
+    loadathletes();
   </script>
 </body>
 </html>
