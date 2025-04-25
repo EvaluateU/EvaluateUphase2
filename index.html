@@ -1,0 +1,99 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>EvaluateU</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+  <header class="header">
+    <div class="logo">Evaluate<span class="highlight">U</span></div>
+    <p class="tagline">Scout. Track. Discover.</p>
+    <nav class="nav">
+      <a href="#">Home</a>
+      <a href="#">Leaderboard</a>
+      <a href="#">Events</a>
+      <a href="#">Help</a>
+    </nav>
+    <div class="user-buttons">
+      <button>I'm a Coach</button>
+      <button>I'm an Athlete</button>
+    </div>
+  </header>
+
+  <main class="main-layout">
+    <aside class="sidebar">
+      <h2>FILTERS</h2>
+      <input type="text" placeholder="Search by name..."/>
+      <select><option>Position</option><option>QB</option><option>RB</option></select>
+      <select><option>Class</option><option>2024</option><option>2025</option></select>
+      <select><option>State</option><option>TX</option><option>FL</option></select>
+    </aside>
+
+    <section class="main-content">
+      <div class="trending-box">
+        <h3>TOP TRENDING PROSPECTS</h3>
+        <table class="trending-table">
+          <thead>
+            <tr><th>Name</th><th>Pos</th><th>State</th><th>#</th><th>▲</th></tr>
+          </thead>
+          <tbody id="trendingTable">
+            <!-- Trending players will load here -->
+          </tbody>
+        </table>
+      </div>
+
+      <div class="cards-grid" id="athleteCards">
+        <!-- Athlete cards will load here -->
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">© 2024 EvaluateU. All rights reserved.</footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const supabase = window.supabase.createClient(
+      'https://mhezmwpbbxuzzcpcpege.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1oZXptd3BiYnh1enpjcGNwZWdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU2MTA3NzIsImV4cCI6MjA2MTE4Njc3Mn0.eEgaMdWAfZywvIZgQFIe6-DIxc1__2vaEt3j4Ey0jxw'
+    );
+
+    async function loadAthletes() {
+      const { data, error } = await supabase.from('Athletes').select('*');
+      const cardArea = document.getElementById("athleteCards");
+      const trendingTable = document.getElementById("trendingTable");
+
+      if (error) {
+        console.error('Error loading:', error.message);
+        cardArea.innerHTML = "<p>Error loading athletes.</p>";
+        return;
+      }
+
+      // Populate trending (top 5 by interest_level)
+      const trending = [...data].sort((a, b) => (b.interest_level || 0) - (a.interest_level || 0)).slice(0, 5);
+      trending.forEach(player => {
+        const row = document.createElement("tr");
+        row.innerHTML = `<td>${player.name}</td><td>${player.position}</td><td>${player.state}</td><td>#${player.rank || "?"}</td><td>▲ ${player.interest_level || 0}</td>`;
+        trendingTable.appendChild(row);
+      });
+
+      // Populate player cards
+      data.forEach(player => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <div class="avatar"></div>
+          <h4>${player.name} <span class="badge">RISING STOCK</span></h4>
+          <p>${player.position} • ${player.height || "—"}<br/>Class of ${player.class_year}</p>
+          <a href="${player.video_url}" target="_blank" class="watch-button">WATCH HIGHLIGHTS</a>
+        `;
+        cardArea.appendChild(card);
+      });
+    }
+
+    loadAthletes();
+  </script>
+</body>
+</html>
